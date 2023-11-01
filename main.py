@@ -2,6 +2,7 @@ from aiogram import Bot
 import asyncio
 import logging
 
+from core.handlers.basic import dp
 from core.settings import settings
 
 
@@ -12,8 +13,7 @@ async def start(dp):
 
     logging.basicConfig(level=logging.INFO)
 
-    bot = Bot(token=settings.bots.bot_token, parse_mode='HTML')
-
+    bot = Bot(token='6819178630:AAFdfIgpzZVotZqLfSQnNHqLWZBbv3l-3lg', parse_mode='HTML')
 
     try:
         await dp.start_polling(bot)

@@ -17,10 +17,10 @@ async def start_bot(bot: Bot):
                            text='Бот запущен!')
 
 
-@dp.shutdown()
-async def stop_bot(bot: Bot):
-    await bot.send_message(settings.bots.admin_id,
-                           text='Бот остановлен!')
+# @dp.shutdown()
+# async def stop_bot(bot: Bot):
+#     await bot.send_message(settings.bots.admin_id,
+#                            text='Бот остановлен!')
 
 
 @dp.message(CommandStart())
