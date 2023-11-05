@@ -31,7 +31,7 @@ class User(BaseModel):
     full_name_telegram: Mapped[Optional[str]] = mapped_column(String)
     chat_id: Mapped[Optional[int]] = mapped_column(Integer)
 
-    parties_attending = relationship("Party", secondary="student_in_party")
+    partys = relationship("StudentInParty", backref="student")
 
     def __repr__(self):
         return (f"User(id={self.id!r}, name={self.first_name!r},"
@@ -51,20 +51,10 @@ class Party(BaseModel):
     )
     active: Mapped[bool] = mapped_column(Boolean)
 
-    students_in_party = relationship("User", secondary="student_in_party",
-                                     back_populates="parties_attending")
+    students = relationship("StudentInParty", backref="party")
 
     def __repr__(self):
         return f"Party(id={self.id!r}, name={self.name!r})"
-
-
-class Schedule(BaseModel):
-    __tablename__ = "schedule"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    date: Mapped[Date] = mapped_column(Date)
-    start_lesson: Mapped[DateTime] = mapped_column(DateTime)
-    end_lesson: Mapped[DateTime] = mapped_column(DateTime)
 
 
 class StudentInParty(BaseModel):
@@ -76,25 +66,39 @@ class StudentInParty(BaseModel):
     party_id: Mapped[int] = mapped_column(ForeignKey("party.id"))
     student_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
-    party = relationship("Party", back_populates="students_in_party")
-    student = relationship("User", back_populates="parties_attending")
-
     def __repr__(self):
         return (f"StudentInParty(id={self.id}, party_id={self.party_id},"
                 f" student_id={self.student_id})")
 
 
-# class LessonsHistory(BaseModel):
-#     __tablename__ = "lessons_history"
-#
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     lesson_id: Mapped[int]
-#     student: Mapped[]
-#     party: Mapped[]
-#     visit: Mapped[bool]
-#     payment: Mapped[bool]
+class Schedule(BaseModel):
+    __tablename__ = "schedule"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    date: Mapped[Date] = mapped_column(Date)
+    start_lesson: Mapped[DateTime] = mapped_column(DateTime)
+    end_lesson: Mapped[DateTime] = mapped_column(DateTime)
 
 
+class LessonsHistory(BaseModel):
+    __tablename__ = "lessons_history"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    visit: Mapped[bool] = mapped_column(Boolean)
+    payment: Mapped[bool] = mapped_column(Boolean)
+
+    lesson_id: Mapped[int] = mapped_column(ForeignKey("schedule.id"))
+    student_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    party_id: Mapped[int] = mapped_column(ForeignKey("party.id"))
+
+    lesson = relationship("Schedule")
+    student = relationship("User")
+    party = relationship("Party")
+
+    def __repr__(self):
+        return (f"LessonsHistory(id={self.id},"
+                f" visit={self.visit},"
+                f" payment={self.payment})")
 
 
 # Провести миграции (создать таблицы)

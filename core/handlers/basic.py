@@ -2,6 +2,7 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 
+from core.keyboards.start_keyboards import get_start_keyboard_for_admin
 from core.utils.commands import set_commands
 from core.settings import settings
 # from core.keyboards.inline import get_inline_keyboard_for_admin
@@ -27,7 +28,8 @@ async def start_bot(bot: Bot):
 async def get_start(message: Message, bot: Bot):
     if (message.from_user.id == settings.bots.admin_id
             or message.from_user.id == settings.bots.alyona_id):
-        await message.answer('Вот что ты можешь выбрать')
+        await message.answer('Вот что ты можешь выбрать',
+                             reply_markup=get_start_keyboard_for_admin())
     else:
         await message.answer(f'Привет {message.from_user.first_name},'
                          f' рад тебя видеть!')
