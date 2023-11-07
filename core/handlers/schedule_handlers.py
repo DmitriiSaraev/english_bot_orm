@@ -6,10 +6,12 @@ from aiogram import types
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from core.database.party_queris import get_active_party
 from core.database.schedule_queries import get_all_future_lessons, \
     get_lesson_by_id, get_studens_from_lessons_history
 from core.keyboards.schedule_keyboards import get_keyboard_for_schedule, \
-    get_keyboard_lessons, get_keyboard_id_lesson
+    get_keyboard_lessons, get_keyboard_id_lesson, \
+    get_keyboard_add_student_to_lesson, keyboard_add_party_to_lesson
 from core.utils.callback_data import MainCallbackData
 
 schedule_router = Router()
@@ -40,6 +42,7 @@ async def get_schedule(callback: types.CallbackQuery):
     await callback.answer()
 
 
+# Открыть панель для уравления уроком
 @schedule_router.callback_query(MainCallbackData.filter(
     F.action == 'open_lesson'))
 async def open_lesson(callback: types.CallbackQuery,
@@ -57,6 +60,7 @@ async def open_lesson(callback: types.CallbackQuery,
     await callback.answer()
 
 
+# Получить список записанных на урок, и кнопки для записи на урок
 @schedule_router.callback_query(MainCallbackData.filter(
     F.action == 'get_student_from_lesson'))
 async def get_student_from_lesson(callback: types.CallbackQuery,
@@ -64,27 +68,34 @@ async def get_student_from_lesson(callback: types.CallbackQuery,
 
     lesson_id = callback_data.lesson_id
     lessons_history = get_studens_from_lessons_history(lesson_id)
-    # if len(lessons_history) == 0:
-    #     await callback.message.answer(text='На данный урок ни кто не записан',
-    #                                   reply_markup=keyboard)
-    # else:
-    #     pass
-    a = 1
 
-    # lesson_id = callback_data.lesson_id
-    # lesson = get_lesson_by_id(lesson_id)
-    #
-    # keyboard = get_keyboard_id_lesson(lesson)
-    #
-    # await callback.message.answer(text=f'{lesson.date} '
-    #                                    f'{lesson.start_lesson} - '
-    #                                    f'{lesson.end_lesson}',
-    #                               reply_markup=keyboard)
+    keyboard = get_keyboard_add_student_to_lesson(lesson_id)
 
-    await callback.message.answer(text=f'{lesson.id}')
+    if len(lessons_history) == 0:
+        await callback.message.answer(text='На данный урок ни кто не записан',
+                                      reply_markup=keyboard)
+    else:
+        pass
 
     await callback.answer()
 
+
+# Вывести список групп и записать группу на урок
+@schedule_router.callback_query(MainCallbackData.filter(
+    F.action == 'add_party_to_lesson'))
+async def add_party_to_lesson(callback: types.CallbackQuery,
+                              callback_data: MainCallbackData):
+
+    lesson_id = callback_data.lesson_id
+
+    partys = get_active_party()
+
+    keyboard = keyboard_add_party_to_lesson(lesson_id, partys)
+
+    await callback.message.answer(text='Выбери группу:',
+                                  reply_markup=keyboard)
+
+    await callback.answer()
 
 
 

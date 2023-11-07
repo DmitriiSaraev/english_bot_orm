@@ -54,3 +54,41 @@ def get_keyboard_id_lesson(lesson: Schedule):
     builder.adjust(1, 1, 1, 1, 1, 1, 1)
 
     return builder.as_markup()
+
+
+# Выбор кого записать (группу или студента)
+def get_keyboard_add_student_to_lesson(lesson_id):
+    builder = InlineKeyboardBuilder()
+    builder.button(text='Записать группу',
+                   callback_data=MainCallbackData(
+                       action='add_party_to_lesson',
+                       id_lesson=lesson_id))
+    builder.button(text='Записать ученика',
+                   callback_data=MainCallbackData(
+                       action='add_student_to_lesson',
+                       lesson_id=lesson_id))
+
+    return builder.as_markup()
+
+
+# Для записи группы на урок (выводит список групп)
+def keyboard_add_party_to_lesson(lesson_id, partys):
+    builder = InlineKeyboardBuilder()
+
+    for party in partys:
+        builder.button(text=f'{party.name}',
+                       callback_data=
+                       MainCallbackData(lesson_id=lesson_id,
+                                        party_id=party.id,
+                                        party_name=party.name))
+
+    builder.adjust(*[1 for item in partys])
+    return builder.as_markup()
+
+
+
+
+
+
+
+

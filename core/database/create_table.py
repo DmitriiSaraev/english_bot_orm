@@ -1,5 +1,6 @@
 from typing import List
 from typing import Optional
+from datetime import datetime
 from sqlalchemy import ForeignKey, Date, Integer, Boolean, create_engine, \
     select, func, DateTime
 from sqlalchemy import String
@@ -23,9 +24,9 @@ class User(BaseModel):
     first_name: Mapped[str] = mapped_column(String(30))
     middle_name: Mapped[str] = mapped_column(String(30))
     last_name: Mapped[str] = mapped_column(String(30))
-    birthday: Mapped[Optional[Date]] = mapped_column(Date, default=func.now())
+    birthday: Mapped[Optional[Date]] = mapped_column(Date)
     registration_date: Mapped[Optional[Date]] = mapped_column(
-        Date, default=func.now()
+        Date, default=datetime.now().date()
     )
     studies: Mapped[Optional[bool]] = mapped_column(Boolean)
     full_name_telegram: Mapped[Optional[str]] = mapped_column(String)
