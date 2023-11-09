@@ -78,7 +78,8 @@ def keyboard_add_party_to_lesson(lesson_id, partys):
     for party in partys:
         builder.button(text=f'{party.name}',
                        callback_data=
-                       MainCallbackData(lesson_id=lesson_id,
+                       MainCallbackData(action='add_party_to_lesson',
+                                        lesson_id=lesson_id,
                                         party_id=party.id,
                                         party_name=party.name))
 

@@ -45,12 +45,12 @@ class Party(BaseModel):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
     create_date: Mapped[Optional[Date]] = mapped_column(
-        Date, default=func.now()
+        Date, default=datetime.now().date()
     )
     update_date: Mapped[Optional[Date]] = mapped_column(
-        Date, default=func.now()
+        Date, default=datetime.now().date()
     )
-    active: Mapped[bool] = mapped_column(Boolean)
+    active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     students = relationship("StudentInParty", backref="party")
 

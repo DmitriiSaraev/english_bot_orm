@@ -44,7 +44,7 @@ def get_lesson_by_id(lesson_id) -> Schedule:
             return "Урок не найден"
 
 
-def get_studens_from_lessons_history(lesson_id) -> LessonsHistory:
+def get_students_from_lessons_history(lesson_id) -> LessonsHistory:
     with Session(engine) as session:
         results = session.query(LessonsHistory).filter(
             LessonsHistory.lesson_id == lesson_id).all()
