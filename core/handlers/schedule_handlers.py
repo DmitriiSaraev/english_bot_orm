@@ -82,9 +82,9 @@ async def get_student_from_lesson(callback: types.CallbackQuery,
 
 # Вывести список групп и записать группу на урок
 @schedule_router.callback_query(MainCallbackData.filter(
-    F.action == 'add_party_to_lesson'))
-async def choice_party_for_add_to_lesson(callback: types.CallbackQuery,
-                              callback_data: MainCallbackData):
+    F.action == 'show_party_for_add_lesson'))
+async def show_party_for_add_lesson_handler(callback: types.CallbackQuery,
+                                            callback_data: MainCallbackData):
 
     lesson_id = callback_data.lesson_id
 

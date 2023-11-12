@@ -62,10 +62,11 @@ class StudentInParty(BaseModel):
     __tablename__ = "student_in_party"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    create_date: Mapped[Date] = mapped_column(Date, default=func.now())
-    update_date: Mapped[Date] = mapped_column(Date)
+    create_date: Mapped[Date] = mapped_column(
+        Date, default=datetime.now().date()
+    )
     party_id: Mapped[int] = mapped_column(ForeignKey("party.id"))
-    student_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    student_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
 
     def __repr__(self):
         return (f"StudentInParty(id={self.id}, party_id={self.party_id},"

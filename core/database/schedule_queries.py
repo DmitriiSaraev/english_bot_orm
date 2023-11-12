@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
 from core.database.create_table import User, Schedule, LessonsHistory, Party
@@ -36,12 +37,12 @@ def get_all_future_lessons():
 
 def get_lesson_by_id(lesson_id) -> Schedule:
     with Session(engine) as session:
-        lesson = session.query(Schedule).get(lesson_id)
-
-        if lesson is not None:
+        try:
+            lesson = session.query(Schedule).filter_by(id=lesson_id).one()
             return lesson
-        else:
-            return "Урок не найден"
+        except NoResultFound:
+            # Возникает, если урок с указанным id не найден
+            raise ValueError("Урок не найден")
 
 
 def get_students_from_lessons_history(lesson_id) -> LessonsHistory:

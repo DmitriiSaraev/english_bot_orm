@@ -1,10 +1,9 @@
 from datetime import datetime
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine, func
+from sqlalchemy.orm import Session, aliased, joinedload
 
-from core.database.create_table import User
-
+from core.database.create_table import User, StudentInParty, Party
 
 engine = create_engine('sqlite:///bot.db', echo=True)
 
@@ -47,4 +46,23 @@ def create_user(first_name,
             user = session.query(User).filter(User.chat_id == chat_id).first()
 
             return user
+
+
+def get_student_without_party():
+    def get_users_with_studies_and_empty_partys():
+        with Session(engine) as session:
+            users = (
+                session.query(User)
+                .options(joinedload(User.partys))
+                .filter(~User.partys.any())
+                .all()
+            )
+
+        return users
+
+    # Использование функции
+    users = get_users_with_studies_and_empty_partys()
+
+    return users
+
 

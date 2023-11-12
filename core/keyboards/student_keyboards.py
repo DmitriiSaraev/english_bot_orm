@@ -11,7 +11,7 @@ def keyboard_for_working_with_students():
                    MainCallbackData(action='create_party'))
     builder.button(text='Добавить ученика в группу',
                    callback_data=
-                   MainCallbackData(action='add_student_to_party'))
+                   MainCallbackData(action='show_students_for_add_to_party'))
 
     builder.adjust(1, 1, 1)
 

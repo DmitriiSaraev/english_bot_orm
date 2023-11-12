@@ -20,7 +20,8 @@ async def start(dp):
 
     logging.basicConfig(level=logging.INFO)
 
-    bot = Bot(token='6819178630:AAFdfIgpzZVotZqLfSQnNHqLWZBbv3l-3lg', parse_mode='HTML')
+    bot = Bot(token='6819178630:AAFdfIgpzZVotZqLfSQnNHqLWZBbv3l-3lg',
+              parse_mode='HTML')
 
     try:
         await dp.start_polling(bot)

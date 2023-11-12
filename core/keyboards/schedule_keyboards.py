@@ -61,8 +61,8 @@ def get_keyboard_add_student_to_lesson(lesson_id):
     builder = InlineKeyboardBuilder()
     builder.button(text='Записать группу',
                    callback_data=MainCallbackData(
-                       action='add_party_to_lesson',
-                       id_lesson=lesson_id))
+                       action='show_party_for_add_lesson',
+                       lesson_id=lesson_id))
     builder.button(text='Записать ученика',
                    callback_data=MainCallbackData(
                        action='add_student_to_lesson',

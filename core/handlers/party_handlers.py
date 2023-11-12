@@ -5,7 +5,12 @@ from aiogram.fsm.context import FSMContext
 from aiogram import types
 
 from core.database.create_table import Party
-from core.database.party_queris import create_party
+from core.database.party_queris import create_party, add_party_to_lesson, \
+    get_active_party, \
+    add_student_to_party_by_id
+from core.database.user_queris import get_student_without_party
+from core.keyboards.party_keyboards import keyboard_get_students_without_group, \
+    keyboard_add_student_to_party
 from core.utils.callback_data import MainCallbackData
 from core.utils.statesform import StateAddParty
 
@@ -46,17 +51,72 @@ async def add_party_to_lesson_handler(callback: types.CallbackQuery,
 
     lesson_id = callback_data.lesson_id
     party_id = callback_data.party_id
+    party_name = callback_data.party_name
 
-   # на урок записываем группу - то есть в таблицу лесонс хистори добавляем
-   #  строку с id  групы, и записываем всех студентов из этой группы на урок
-   #  (id студетов)
+    lesson, created = add_party_to_lesson(party_id, lesson_id)
 
-
+    if created:
+        await callback.message.answer(text=f'Группа {party_name} записана')
+    else:
+        await callback.message.answer(text=f'Группа {party_name} уже записана')
 
 
 
     await callback.message.answer(text='Группа записана')
     await callback.answer()
+
+
+# Добавить ученика в группу (показать студентов и выбрать,
+# потом выбрать группу)
+@party_router.callback_query(MainCallbackData.filter(
+    F.action == 'show_students_for_add_to_party'))
+async def add_student_to_party_handler(callback: types.CallbackQuery,
+                                       callback_data: MainCallbackData):
+    students = get_student_without_party()
+
+    keyboard = keyboard_get_students_without_group(
+        action='show_party_for_add', students=students
+    )
+
+    await callback.message.answer(text='Выбирай ученика',
+                                  reply_markup=keyboard)
+    await callback.answer()
+
+
+# Показать список групп для записи студента в одну из этих групп
+@party_router.callback_query(MainCallbackData.filter(
+    F.action == 'show_party_for_add'))
+async def show_party_for_add_handler(callback: types.CallbackQuery,
+                                       callback_data: MainCallbackData):
+    student_id = callback_data.student_id
+    partys = get_active_party()
+
+    keyboard = keyboard_add_student_to_party(student_id, partys)
+    await callback.message.answer(text='Такие вот группы у нас',
+                                  reply_markup=keyboard)
+
+    await callback.answer()
+
+
+@party_router.callback_query(MainCallbackData.filter(
+    F.action == 'add_student_to_party'))
+async def add_student_to_party_handler(callback: types.CallbackQuery,
+                                       callback_data: MainCallbackData):
+    student_id = callback_data.student_id
+    party_id = callback_data.party_id
+
+    new_student_in_party, created = add_student_to_party_by_id(
+        student_id, party_id
+    )
+
+    if created is True:
+        await callback.message.answer(text=f'Ученик добавлен в группу')
+    else:
+        await callback.message.answer(text=f'Ученик уже добавлен в эту группу')
+
+    await callback.answer()
+
+
 
 
 
