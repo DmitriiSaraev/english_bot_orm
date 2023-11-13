@@ -90,8 +90,8 @@ class LessonsHistory(BaseModel):
     payment: Mapped[bool] = mapped_column(Boolean)
 
     lesson_id: Mapped[int] = mapped_column(ForeignKey("schedule.id"))
-    student_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    party_id: Mapped[int] = mapped_column(ForeignKey("party.id"))
+    student_id: Mapped[Optional[int]] = mapped_column(ForeignKey("user.id"))
+    party_id: Mapped[Optional[int]] = mapped_column(ForeignKey("party.id"))
 
     lesson = relationship("Schedule")
     student = relationship("User")

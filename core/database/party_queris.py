@@ -36,9 +36,10 @@ def get_active_party():
 
 def add_party_to_lesson(party_id, lesson_id):
     with Session(engine) as session:
-        lesson = session.query(LessonsHistory).filter(
-            LessonsHistory.party_id == party_id
-        ).first()
+        lesson = (session.query(LessonsHistory)
+                  .filter(LessonsHistory.party_id == party_id)
+                  .first())
+        lesson = None
 
         created = False
 
@@ -54,6 +55,26 @@ def add_party_to_lesson(party_id, lesson_id):
             session.commit()
 
             created = True
+
+            session = Session(engine)
+            result = session.query(StudentInParty).filter(
+                StudentInParty.party_id == party_id
+            ).all()
+            students = result
+            session.close()
+
+            for student in students:
+                with Session(engine) as session:
+                    student: StudentInParty
+                    new_lesson = LessonsHistory(
+                        visit=False,
+                        payment=False,
+                        lesson_id=lesson_id,
+                        student_id=student.student_id,
+                        party_id=None
+                    )
+                    session.add(new_lesson)
+                    session.commit()
 
         return lesson, created
 

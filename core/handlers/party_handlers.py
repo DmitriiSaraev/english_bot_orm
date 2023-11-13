@@ -60,9 +60,6 @@ async def add_party_to_lesson_handler(callback: types.CallbackQuery,
     else:
         await callback.message.answer(text=f'Группа {party_name} уже записана')
 
-
-
-    await callback.message.answer(text='Группа записана')
     await callback.answer()
 
 

@@ -1,6 +1,6 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from core.database.create_table import Schedule
+from core.database.create_table import Schedule, LessonsHistory
 from core.utils.callback_data import MainCallbackData
 
 
@@ -86,6 +86,42 @@ def keyboard_add_party_to_lesson(lesson_id, partys):
     builder.adjust(*[1 for item in partys])
     return builder.as_markup()
 
+
+def get_keyboard_recorded_student_to_lesson_and_edit_lesson(lessons_history):
+    # получить список учеников записанных на урок и кнопки для редактирования
+    builder = InlineKeyboardBuilder()
+
+    for lesson in lessons_history:
+        lesson: LessonsHistory
+        lesson_id = lesson.lesson_id
+        if lesson.party:
+            builder.button(text=f'{lesson.party.name}',
+                           callback_data=MainCallbackData(
+                               action='open_party_card',
+                               lesson_id=lesson.lesson_id,
+                               party_id=lesson.party_id))
+        else:
+            builder.button(text=f'{lesson.student.first_name} {lesson.student.last_name}',
+                           callback_data=MainCallbackData(
+                               action='open_student_card',
+                               lesson_id=lesson.lesson_id,
+                               student_id=lesson.student_id)
+                           ),
+
+    builder.button(text='Записать группу',
+                   callback_data=MainCallbackData(action='str', lesson_id=lesson_id))
+    builder.button(text='Записать ученика',
+                   callback_data=MainCallbackData(
+                       action='show_student_for_add_to_lesson',
+                       lesson_id=1))
+    builder.button(text='Удалить ученика',
+                   callback_data=MainCallbackData(
+                       action='show_student_for_delete_from_lesson',
+                       lesson_id=1))
+
+    builder.adjust(1, 1, *[1 for item in lessons_history])
+
+    return builder.as_markup()
 
 
 

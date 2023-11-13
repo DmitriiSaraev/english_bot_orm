@@ -11,7 +11,8 @@ from core.database.schedule_queries import get_all_future_lessons, \
     get_lesson_by_id, get_students_from_lessons_history
 from core.keyboards.schedule_keyboards import get_keyboard_for_schedule, \
     get_keyboard_lessons, get_keyboard_id_lesson, \
-    get_keyboard_add_student_to_lesson, keyboard_add_party_to_lesson
+    get_keyboard_add_student_to_lesson, keyboard_add_party_to_lesson, \
+    get_keyboard_recorded_student_to_lesson_and_edit_lesson
 from core.utils.callback_data import MainCallbackData
 
 schedule_router = Router()
@@ -75,7 +76,8 @@ async def get_student_from_lesson(callback: types.CallbackQuery,
         await callback.message.answer(text='На данный урок ни кто не записан',
                                       reply_markup=keyboard)
     else:
-        pass
+        keyboard = get_keyboard_recorded_student_to_lesson_and_edit_lesson(lessons_history)
+        await callback.message.answer(text='Список записанных:', reply_markup=keyboard)
 
     await callback.answer()
 

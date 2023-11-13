@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 from datetime import datetime
 
@@ -47,12 +47,19 @@ def get_lesson_by_id(lesson_id) -> Schedule:
 
 def get_students_from_lessons_history(lesson_id) -> LessonsHistory:
     with Session(engine) as session:
-        results = session.query(LessonsHistory).filter(
-            LessonsHistory.lesson_id == lesson_id).all()
+        results = (session.query(LessonsHistory)
+                   .options(
+            joinedload(LessonsHistory.lesson),
+            joinedload(LessonsHistory.student),
+            joinedload(LessonsHistory.party)
+        )
+                   .filter(LessonsHistory.lesson_id == lesson_id)
+                   .all())
         session.close()
 
         return results
 
+    # .options(joinedload(User.partys))
 
 
 
