@@ -5,9 +5,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram import types
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
 from core.database.schedule_queries import create_lesson
 from core.utils.statesform import StateSchedule
+from core.utils.app_scheduler_tasks import send_message_middleware
 
 create_lesson_router = Router()
 
@@ -38,7 +40,7 @@ async def get_duration_for_new_lesson(message: types.Message,
 
 
 @create_lesson_router.message(StateSchedule.INPUT_LESSON_DURATION)
-async def create_new_lesson(message: types.Message, state: FSMContext):
+async def create_new_lesson(message: types.Message, bot: Bot, state: FSMContext, apscheduler: AsyncIOScheduler):
     await state.update_data(duration=message.text)
 
     context_data = await state.get_data()
@@ -77,6 +79,10 @@ async def create_new_lesson(message: types.Message, state: FSMContext):
                          f'Конец урока: {end_lesson}')
 
     await state.clear()
+
+    # Тут вставить функцию создания напоминания
+    apscheduler.add_job(send_message_middleware, trigger='date', run_date=datetime.now() + timedelta(seconds=10),
+                        kwargs={'bot': bot, 'chat_id': message.from_user.id})
 
 ### Конец блока создания урока ###
 
